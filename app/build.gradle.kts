@@ -37,6 +37,11 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.github.dhaval2404:imagepicker:2.1")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.play.services.cast.framework)
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
@@ -45,6 +50,8 @@ dependencies {
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.play.services.location)
+    implementation(libs.firebase.storage)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     // AndroidX dan Compose

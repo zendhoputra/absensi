@@ -1,19 +1,27 @@
 package com.example.absensi;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ImageView;
 
-
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -22,7 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import android.view.Window;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -74,20 +82,53 @@ public class HomeActivity extends AppCompatActivity {
 
         presensiPKL.setOnClickListener(v -> {
             dialog.dismiss();
-            Toast.makeText(this, "Presensi PKL diklik", Toast.LENGTH_SHORT).show();
+            if (isNetworkAvailable()) {
+                Intent intent = new Intent(this, PresensiActivity.class);
+                intent.putExtra("KATEGORI", "PKL");
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_left);
+            } else {
+                Toast.makeText(this, "Tidak ada koneksi internet", Toast.LENGTH_SHORT).show();
+            }
         });
 
         presensiPKN.setOnClickListener(v -> {
             dialog.dismiss();
-            Toast.makeText(this, "Presensi PKN diklik", Toast.LENGTH_SHORT).show();
+            if (isNetworkAvailable()) {
+                Intent intent = new Intent(this, PresensiActivity.class);
+                intent.putExtra("KATEGORI", "PKN");
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_left);
+            } else {
+                Toast.makeText(this, "Tidak ada koneksi internet", Toast.LENGTH_SHORT).show();
+            }
         });
-
 
         dialog.show();
 
         Window window = dialog.getWindow();
         if (window != null) {
             window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network network = connectivityManager.getActiveNetwork();
+            if (network == null) return false;
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            return capabilities != null &&
+                    (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET));
+        } else {
+            // Fallback untuk versi lama
+            NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         }
     }
 

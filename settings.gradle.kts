@@ -16,8 +16,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io") // ✅ Tambahkan ini
     }
 }
+
 
 rootProject.name = "Absensi"
 include(":app")
