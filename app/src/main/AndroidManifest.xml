@@ -54,5 +54,12 @@
             android:exported="true"
             android:theme="@style/Theme.Absensi" />
 
+        <!-- Tambahkan RiwayatActivity -->
+        <activity
+            android:name=".RiwayatActivity"
+            android:exported="true"
+            android:label="Riwayat Presensi"
+            android:theme="@style/Theme.Absensi" />
+
     </application>
 </manifest>

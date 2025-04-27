@@ -1,7 +1,5 @@
 package com.example.absensi;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,21 +14,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.Window;
+import android.view.ViewGroup;
 
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
-
-import android.view.Window;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -40,15 +37,21 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // Inisialisasi komponen UI
         TextView welcomeText = findViewById(R.id.textView2);
         ImageButton logoutButton = findViewById(R.id.logout_button);
         TextView presensiButton = findViewById(R.id.presensiButton);
+        TextView riwayatButton = findViewById(R.id.riwayatButton);
+        TextView perizinanButton = findViewById(R.id.perizinanButton);
+        TextView comingSoonButton = findViewById(R.id.comingSoonButton);
 
+        // Set welcome message dengan nama pengguna
         String name = getIntent().getStringExtra("name");
         if (name != null) {
             welcomeText.setText("Welcome, " + name + "!");
         }
 
+        // Logout button
         logoutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
 
@@ -66,7 +69,29 @@ public class HomeActivity extends AppCompatActivity {
             });
         });
 
+        // Presensi button
         presensiButton.setOnClickListener(v -> showPresensiDialog());
+
+        // Riwayat button
+        riwayatButton.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                Intent intent = new Intent(HomeActivity.this, RiwayatActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_left);
+            } else {
+                Toast.makeText(this, "Tidak ada koneksi internet", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Perizinan button (opsional)
+        perizinanButton.setOnClickListener(v -> {
+            Toast.makeText(this, "Fitur perizinan akan datang", Toast.LENGTH_SHORT).show();
+        });
+
+        // Coming soon button
+        comingSoonButton.setOnClickListener(v -> {
+            Toast.makeText(this, "Fitur dalam pengembangan", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void showPresensiDialog() {
@@ -132,4 +157,15 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        // Tampilkan dialog konfirmasi saat tombol back ditekan
+        super.onBackPressed();
+        new AlertDialog.Builder(this)
+                .setTitle("Keluar Aplikasi")
+                .setMessage("Apakah Anda yakin ingin keluar dari aplikasi?")
+                .setPositiveButton("Ya", (dialog, which) -> finish())
+                .setNegativeButton("Tidak", null)
+                .show();
+    }
 }
