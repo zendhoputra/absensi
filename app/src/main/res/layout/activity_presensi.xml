@@ -10,18 +10,31 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
+        <!-- Tombol Kembali -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/back"
+            android:contentDescription="Kembali"
+            android:layout_gravity="start"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="16dp"/>
+
         <!-- Header -->
+
+        <!-- Foto Selfie -->
         <TextView
             android:id="@+id/tvHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:gravity="center"
             android:layout_marginBottom="16dp"
-            android:text="@string/form_presensi"/>
+            android:gravity="center"
+            android:text="@string/form_presensi"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <!-- Foto Selfie -->
         <ImageView
             android:id="@+id/ivSelfie"
             android:layout_width="200dp"

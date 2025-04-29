@@ -84,14 +84,10 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Perizinan button (opsional)
-        perizinanButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Fitur perizinan akan datang", Toast.LENGTH_SHORT).show();
-        });
+        perizinanButton.setOnClickListener(v -> showPerizinanDialog());
 
         // Coming soon button
-        comingSoonButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Fitur dalam pengembangan", Toast.LENGTH_SHORT).show();
-        });
+        comingSoonButton.setOnClickListener(v -> Toast.makeText(this, "Fitur dalam pengembangan", Toast.LENGTH_SHORT).show());
     }
 
     private void showPresensiDialog() {
@@ -121,6 +117,50 @@ public class HomeActivity extends AppCompatActivity {
             dialog.dismiss();
             if (isNetworkAvailable()) {
                 Intent intent = new Intent(this, PresensiActivity.class);
+                intent.putExtra("KATEGORI", "PKN");
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_left);
+            } else {
+                Toast.makeText(this, "Tidak ada koneksi internet", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+    }
+
+    private void showPerizinanDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_perizinan_options, null);
+
+        TextView perizinanPKL = dialogView.findViewById(R.id.perizinanPKL);
+        TextView perizinanPKN = dialogView.findViewById(R.id.perizinanPKN);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        perizinanPKL.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (isNetworkAvailable()) {
+                Intent intent = new Intent(this, PerizinanActivity.class);
+                intent.putExtra("KATEGORI", "PKL");
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_left);
+            } else {
+                Toast.makeText(this, "Tidak ada koneksi internet", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        perizinanPKN.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (isNetworkAvailable()) {
+                Intent intent = new Intent(this, PerizinanActivity.class);
                 intent.putExtra("KATEGORI", "PKN");
                 startActivity(intent);
                 overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_left);

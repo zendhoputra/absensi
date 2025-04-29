@@ -53,12 +53,15 @@
             android:name=".PresensiActivity"
             android:exported="true"
             android:theme="@style/Theme.Absensi" />
-
+        <activity
+        android:name=".PerizinanActivity"
+        android:exported="true"
+        android:theme="@style/Theme.Absensi" />
         <!-- Tambahkan RiwayatActivity -->
         <activity
             android:name=".RiwayatActivity"
             android:exported="true"
-            android:label="Riwayat Presensi"
+            android:label="Riwayat Presensi dan Perizinan"
             android:theme="@style/Theme.Absensi" />
 
     </application>

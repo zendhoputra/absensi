@@ -7,4 +7,6 @@
     <color name="riwayat">#E08543</color>
     <color name="button_normal">#4285F4</color>
     <color name="button_pressed">#3367D6</color>
+    <color name="submit">#59AD6A</color>
+    <color name="selectfile">#1B56FD</color>
 </resources>

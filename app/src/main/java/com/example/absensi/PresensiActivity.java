@@ -1,6 +1,7 @@
 package com.example.absensi;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -65,6 +66,9 @@ public class PresensiActivity extends AppCompatActivity {
     private String currentLatLng;
     private FusedLocationProviderClient fusedLocationClient;
 
+    private ProgressDialog progressDialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +90,17 @@ public class PresensiActivity extends AppCompatActivity {
         btnTakePhoto.setOnClickListener(v -> takePhoto());
         btnGetLocation.setOnClickListener(v -> getCurrentLocation());
         btnSubmit.setOnClickListener(v -> submitPresensi());
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Menyimpan presensi..." +
+                "Mohon ditunggu sebentar");
+        progressDialog.setCancelable(false); // tidak bisa di-cancel biar user nunggu
+        ImageView btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            finish(); // untuk kembali ke activity sebelumnya
+        });
+
+
     }
 
     private void initViews() {
@@ -202,18 +217,22 @@ public class PresensiActivity extends AppCompatActivity {
     }
 
     private void sendDataToGoogleScript() {
+        progressDialog.show(); // <-- Tampilkan loading
+
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 String base64Image = convertImageToBase64(fotoUri);
 
                 if (base64Image.length() > 3_000_000) {
-                    runOnUiThread(() -> Toast.makeText(this, "Foto terlalu besar, silahkan ambil foto lain", Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> {
+                        progressDialog.dismiss(); // Tutup loading kalau error
+                        Toast.makeText(this, "Foto terlalu besar, silahkan ambil foto lain", Toast.LENGTH_LONG).show();
+                    });
                     return;
                 }
 
                 OkHttpClient client = new OkHttpClient();
                 JSONObject json = new JSONObject();
-
                 json.put("nama", Objects.requireNonNull(etNama.getText()).toString());
                 json.put("kategori", kategoriPresensi);
                 json.put("lokasi", Objects.requireNonNull(etLokasi.getText()).toString());
@@ -233,16 +252,20 @@ public class PresensiActivity extends AppCompatActivity {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        runOnUiThread(() -> Toast.makeText(
-                                PresensiActivity.this,
-                                "Gagal mengirim data: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show());
+                        runOnUiThread(() -> {
+                            progressDialog.dismiss(); // Tutup loading
+                            Toast.makeText(
+                                    PresensiActivity.this,
+                                    "Gagal mengirim data: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        });
                     }
 
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) {
                         runOnUiThread(() -> {
+                            progressDialog.dismiss(); // Tutup loading setelah berhasil/kegagalan
                             try {
                                 ResponseBody responseBodyObj = response.body();
                                 if (responseBodyObj == null) {
@@ -280,12 +303,14 @@ public class PresensiActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 runOnUiThread(() -> {
+                    progressDialog.dismiss(); // Tutup loading jika ada exception
                     Log.e("PresensiActivity", "Error sending data", e);
                     Toast.makeText(PresensiActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
             }
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
